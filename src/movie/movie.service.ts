@@ -7,10 +7,39 @@ import { Movie } from './schemas/movie.schema';
 export class MovieService {
   constructor(@InjectModel(Movie.name) private movieModel: Model<Movie>) {}
 
-  async getAllMovies(page: number = 1, limit: number = 4): Promise<Movie[]> {
-    const skip = (page - 1) * limit;
+  async getAllMovies(
+    page: number = 1,
+    limit: number = 4,
+    Title: string,
+    sort: string,
+  ): Promise<{ success: boolean; movies: Movie[]; totalCount: number }> {
+    try {
+      // Filter logic
+      const filter: any =
+        Title && Title.length >= 3
+          ? { Title: { $regex: Title, $options: 'i' } }
+          : {};
+      // Counting documents fort pagination
+      const totalCount = await this.movieModel.countDocuments(filter);
 
-    return this.movieModel.find().skip(skip).limit(limit).exec();
+      // Sorting logic
+      const sortingMovies: any = sort
+        ? {
+            [sort.split(':')[0]]: sort.split(':')[1] === 'asc' ? 1 : -1,
+          }
+        : { Title: 1 };
+
+      const movies = await this.movieModel
+        .find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort(sortingMovies)
+        .exec();
+
+      return { success: true, movies, totalCount };
+    } catch (error) {
+      throw new Error(`Error fetching movies: ${error.message}`);
+    }
   }
 
   async getMovieById(_id: string): Promise<Movie | null> {

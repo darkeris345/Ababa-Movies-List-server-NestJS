@@ -21,9 +21,10 @@ export class MovieController {
   async getMovies(
     @Query('page') page: number,
     @Query('limit') limit: number,
-  ): Promise<Movie[]> {
-    const movies = await this.movieService.getAllMovies(page, limit);
-    return movies;
+    @Query(`sort`) sort: string,
+    @Query(`Title`) Title: string,
+  ): Promise<{ success: boolean; totalCount: number; movies: Movie[] }> {
+    return await this.movieService.getAllMovies(page, limit, Title, sort);
   }
 
   // Get single movie
@@ -33,7 +34,7 @@ export class MovieController {
     return movie;
   }
 
-  //   Post movie
+  // Post movie
   @Post()
   async postMovie(@Body() createMovieDto: CreateMovieDto): Promise<Movie> {
     const movie = await this.movieService.createMovie(createMovieDto);
