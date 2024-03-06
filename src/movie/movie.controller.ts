@@ -28,15 +28,19 @@ export class MovieController {
   }
 
   // Get single movie
-  @Get(':_id')
-  async getMovie(@Param('_id') _id: string): Promise<Movie | null> {
-    const movie = await this.movieService.getMovieById(_id);
+  @Get(':id')
+  async getMovie(
+    @Param('id') id: string,
+  ): Promise<{ success: boolean; movie: Movie }> {
+    const movie = await this.movieService.getMovieById(id);
     return movie;
   }
 
   // Post movie
   @Post()
-  async postMovie(@Body() createMovieDto: CreateMovieDto): Promise<Movie> {
+  async postMovie(
+    @Body() createMovieDto: CreateMovieDto,
+  ): Promise<{ success: boolean; movie: Movie }> {
     const movie = await this.movieService.createMovie(createMovieDto);
     return movie;
   }
@@ -46,16 +50,17 @@ export class MovieController {
   async putMovie(
     @Param('id') id: string,
     @Body() updateMovieDto: UpdateMovieDto,
-  ): Promise<Movie> {
+  ): Promise<{ success: boolean; movie: Movie }> {
     const movie = await this.movieService.updateMovie(id, updateMovieDto);
     return movie;
   }
 
   //   Delete movie
   @Delete(':id')
-  deleteMovie(@Param('id') id: string) {
-    return {
-      id,
-    };
+  async deleteMovie(
+    @Param('id') id: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const result = await this.movieService.deleteMovie(id);
+    return result;
   }
 }
