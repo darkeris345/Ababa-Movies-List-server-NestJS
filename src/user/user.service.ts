@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -61,6 +62,7 @@ export class UserService {
     return { success: true, message: 'User created successfully' };
   }
 
+  // Login user
   async login(loginDto: LoginDto): Promise<{
     success: boolean;
     token: string;
@@ -88,9 +90,53 @@ export class UserService {
     return {
       success: true,
       token,
-      username: user.username,
+      username,
       id: user._id,
       type: user.type,
     };
+  }
+
+  // Update user favourite list
+  async updateUser(_id: string, favouriteListes: any): Promise<User> {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        _id,
+        { $addToSet: { favouritesListes: favouriteListes } },
+        { new: true, runValidators: true },
+      );
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      return user;
+    } catch (error) {
+      if (error.name === 'ValidationError') {
+        throw new UnprocessableEntityException({
+          message: 'Validation failed',
+          errors: error.errors,
+        });
+      }
+      throw new Error('Internal Server Error');
+    }
+  }
+
+  // Delete movie from favourite list
+  async deleteMovie(_id: string, movieId: string): Promise<User> {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        _id,
+        { $pull: { favouritesListes: movieId } },
+        { new: true, runValidators: true },
+      );
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      return user;
+    } catch (error) {
+      throw new Error('Internal Server Error');
+    }
   }
 }
