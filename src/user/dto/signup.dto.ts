@@ -12,4 +12,6 @@ export class SignUpDto {
     message: 'Password must be 8+ characters with at least one symbol.',
   })
   password: string;
+
+  type: string;
 }

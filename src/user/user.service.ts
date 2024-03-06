@@ -48,13 +48,14 @@ export class UserService {
   async signUp(
     signUpDto: SignUpDto,
   ): Promise<{ success: boolean; message: string }> {
-    const { username, password } = signUpDto;
+    const { username, password, type } = signUpDto;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await this.userModel.create({
       username,
       password: hashedPassword,
+      type,
     });
 
     user.password = undefined;

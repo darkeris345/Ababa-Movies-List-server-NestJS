@@ -50,9 +50,9 @@ export class UserController {
   @Patch(`/:_id`)
   async addToFavouritesList(
     @Param('_id') _id: string,
-    @Body('favouritesListes') favouritesListes: string,
+    @Body('favouritesListes') favouriteListes: string,
   ): Promise<User> {
-    return await this.userService.updateUser(_id, favouritesListes);
+    return await this.userService.updateUser(_id, favouriteListes);
   }
 
   @Patch(':_id/:movieId')
