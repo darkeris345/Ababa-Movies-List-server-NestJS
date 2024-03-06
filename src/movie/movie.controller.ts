@@ -7,17 +7,20 @@ import {
   Patch,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { MovieService } from './movie.service';
 import { Movie } from './schemas/movie.schema';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('movie')
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
   // Get all movies
   @Get()
+  @UseGuards(AuthGuard())
   async getMovies(
     @Query('page') page: number,
     @Query('limit') limit: number,
@@ -29,6 +32,7 @@ export class MovieController {
 
   // Get single movie
   @Get(':_id')
+  @UseGuards(AuthGuard())
   async getMovie(@Param('_id') _id: string): Promise<Movie | null> {
     const movie = await this.movieService.getMovieById(_id);
     return movie;
@@ -36,26 +40,30 @@ export class MovieController {
 
   // Post movie
   @Post()
+  @UseGuards(AuthGuard())
   async postMovie(@Body() createMovieDto: CreateMovieDto): Promise<Movie> {
     const movie = await this.movieService.createMovie(createMovieDto);
     return movie;
   }
 
   //   Update movie
-  @Patch(':id')
+  @Patch(':_id')
+  @UseGuards(AuthGuard())
   async putMovie(
-    @Param('id') id: string,
+    @Param('_id') _id: string,
     @Body() updateMovieDto: UpdateMovieDto,
   ): Promise<Movie> {
-    const movie = await this.movieService.updateMovie(id, updateMovieDto);
+    const movie = await this.movieService.updateMovie(_id, updateMovieDto);
     return movie;
   }
 
   //   Delete movie
-  @Delete(':id')
-  deleteMovie(@Param('id') id: string) {
+  @Delete(':_id')
+  @UseGuards(AuthGuard())
+  deleteMovie(@Param('_id') _id: string) {
     return {
-      id,
+      success: true,
+      message: `Movie ${_id} deleted`,
     };
   }
 }

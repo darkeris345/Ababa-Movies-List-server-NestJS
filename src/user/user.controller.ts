@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Post, Body } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Movie } from 'src/movie/schemas/movie.schema';
+import { SignUpDto } from './dto/signup.dto';
 
 @Controller('user')
 export class UserController {
@@ -21,5 +22,19 @@ export class UserController {
     } catch (error) {
       throw new Error(`Somethin wen wrong: ${error.message}`);
     }
+  }
+
+  @Post(`/register`)
+  async signUp(
+    @Body() signUpDto: SignUpDto,
+  ): Promise<{ success: boolean; message: string }> {
+    return await this.userService.signUp(signUpDto);
+  }
+
+  @Post(`/login`)
+  async login(
+    @Body() loginDto: SignUpDto,
+  ): Promise<{ token: string; id: string; username: string }> {
+    return await this.userService.login(loginDto);
   }
 }
