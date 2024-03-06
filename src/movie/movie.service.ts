@@ -20,7 +20,7 @@ export class MovieService {
           ? { Title: { $regex: Title, $options: 'i' } }
           : {};
       // Counting documents fort pagination
-      const totalCount = await this.movieModel.countDocuments(filter);
+      const totalCount: number = await this.movieModel.countDocuments(filter);
 
       // Sorting logic
       const sortingMovies: any = sort
@@ -29,7 +29,7 @@ export class MovieService {
           }
         : { Title: 1 };
 
-      const movies = await this.movieModel
+      const movies: any = await this.movieModel
         .find(filter)
         .skip((page - 1) * limit)
         .limit(limit)
@@ -42,25 +42,67 @@ export class MovieService {
     }
   }
 
-  async getMovieById(_id: string): Promise<Movie | null> {
-    return this.movieModel.findById(_id).exec();
+  // Get single movie
+  async getMovieById(_id: string): Promise<{ success: boolean; movie: Movie }> {
+    try {
+      const movie = await this.movieModel.findById(_id).exec();
+      if (!movie) {
+        throw new Error('Movie not found');
+      }
+      return {
+        success: true,
+        movie,
+      };
+    } catch (error) {
+      throw new Error(`Error fetching movie: ${error.message}`);
+    }
   }
 
-  async createMovie(createMovieDto: Partial<Movie>): Promise<Movie> {
-    const createdMovie = new this.movieModel(createMovieDto);
-    return createdMovie.save();
+  // Post movie
+  async createMovie(
+    createMovieDto: Partial<Movie>,
+  ): Promise<{ success: boolean; movie: Movie }> {
+    try {
+      const createdMovie: Movie = new this.movieModel(createMovieDto);
+      return {
+        success: true,
+        movie: await createdMovie.save(),
+      };
+    } catch (error) {
+      throw new Error(`Error creating movie: ${error.message}`);
+    }
   }
 
+  // Update movie
   async updateMovie(
     _id: string,
     updateMovieDto: Partial<Movie>,
-  ): Promise<Movie | null> {
-    return this.movieModel
-      .findByIdAndUpdate(_id, updateMovieDto, { new: true })
-      .exec();
+  ): Promise<{ success: boolean; movie: Movie }> {
+    try {
+      const updatedMovie = await this.movieModel
+        .findByIdAndUpdate(_id, updateMovieDto, { new: true })
+        .exec();
+      return {
+        success: true,
+        movie: updatedMovie,
+      };
+    } catch (error) {
+      throw new Error(`Error updating movie: ${error.message}`);
+    }
   }
 
-  async deleteMovie(id: string): Promise<Movie | null> {
-    return this.movieModel.findOneAndDelete({ _id: id }).exec();
+  // Delete movie
+  async deleteMovie(
+    _id: string,
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      await this.movieModel.findByIdAndDelete(_id).exec();
+      return {
+        success: true,
+        message: 'Movie deleted successfully',
+      };
+    } catch (error) {
+      throw new Error(`Error deleting movie: ${error.message}`);
+    }
   }
 }

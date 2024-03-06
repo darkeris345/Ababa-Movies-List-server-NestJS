@@ -33,7 +33,9 @@ export class MovieController {
   // Get single movie
   @Get(':_id')
   @UseGuards(AuthGuard())
-  async getMovie(@Param('_id') _id: string): Promise<Movie | null> {
+  async getMovie(
+    @Param('_id') _id: string,
+  ): Promise<{ success: boolean; movie: Movie }> {
     const movie = await this.movieService.getMovieById(_id);
     return movie;
   }
@@ -41,7 +43,9 @@ export class MovieController {
   // Post movie
   @Post()
   @UseGuards(AuthGuard())
-  async postMovie(@Body() createMovieDto: CreateMovieDto): Promise<Movie> {
+  async postMovie(
+    @Body() createMovieDto: CreateMovieDto,
+  ): Promise<{ success: boolean; movie: Movie }> {
     const movie = await this.movieService.createMovie(createMovieDto);
     return movie;
   }
@@ -52,7 +56,7 @@ export class MovieController {
   async putMovie(
     @Param('_id') _id: string,
     @Body() updateMovieDto: UpdateMovieDto,
-  ): Promise<Movie> {
+  ): Promise<{ success: boolean; movie: Movie }> {
     const movie = await this.movieService.updateMovie(_id, updateMovieDto);
     return movie;
   }
@@ -60,10 +64,10 @@ export class MovieController {
   //   Delete movie
   @Delete(':_id')
   @UseGuards(AuthGuard())
-  deleteMovie(@Param('_id') _id: string) {
-    return {
-      success: true,
-      message: `Movie ${_id} deleted`,
-    };
+  async deleteMovie(
+    @Param('_id') _id: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const result = await this.movieService.deleteMovie(_id);
+    return result;
   }
 }

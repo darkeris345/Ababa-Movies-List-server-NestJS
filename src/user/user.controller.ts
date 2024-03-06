@@ -8,14 +8,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   // Get user favourite list
-  @Get(`:_id/favourites`)
+  @Get(`:id/favourites`)
   async getUserFavouritesList(
-    @Param('_id') _id: string,
+    @Param('id') id: string,
     @Query('Title') Title: string,
   ): Promise<Movie[]> {
     try {
       const filteredFavourites = await this.userService.getUserFavouritesList(
-        _id,
+        id,
         Title,
       );
       return filteredFavourites;
