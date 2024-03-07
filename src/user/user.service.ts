@@ -1,7 +1,6 @@
 import {
   Injectable,
   NotFoundException,
-  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -52,15 +51,25 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await this.userModel.create({
-      username,
-      password: hashedPassword,
-      type,
-    });
+    const existingUser = await this.userModel.findOne({ username });
 
-    user.password = undefined;
+    if (existingUser) {
+      throw new UnprocessableEntityException('User already exists');
+    }
 
-    return { success: true, message: 'User created successfully' };
+    try {
+      const user = await this.userModel.create({
+        username,
+        password: hashedPassword,
+        type,
+      });
+
+      user.password = undefined;
+
+      return { success: true, message: 'User created successfully' };
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   // Login user
@@ -76,13 +85,13 @@ export class UserService {
     const user = await this.userModel.findOne({ username }).select('+password');
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new Error('Invalid email or password');
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new Error('Invalid email or password');
     }
 
     user.password = undefined;
@@ -107,17 +116,11 @@ export class UserService {
       );
 
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new Error('User not found');
       }
 
       return user;
     } catch (error) {
-      if (error.name === 'ValidationError') {
-        throw new UnprocessableEntityException({
-          message: 'Validation failed',
-          errors: error.errors,
-        });
-      }
       throw new Error('Internal Server Error');
     }
   }
@@ -132,7 +135,7 @@ export class UserService {
       );
 
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new Error('User not found');
       }
 
       return user;

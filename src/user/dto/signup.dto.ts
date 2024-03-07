@@ -1,5 +1,15 @@
-import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import {
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+  IsEnum,
+} from 'class-validator';
 
+enum UserType {
+  user = 'user',
+  admin = 'admin',
+}
 export class SignUpDto {
   @IsString()
   @MinLength(4)
@@ -13,5 +23,6 @@ export class SignUpDto {
   })
   password: string;
 
-  type: string;
+  @IsEnum(UserType)
+  type: UserType = UserType.user;
 }

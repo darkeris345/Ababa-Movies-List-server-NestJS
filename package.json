@@ -1,8 +1,8 @@
 {
   "name": "movies-list",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Movie api",
+  "author": "Dmitrij",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
