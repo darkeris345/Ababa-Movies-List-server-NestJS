@@ -17,7 +17,7 @@ To get started, first, you need git, Node.js, and NestJS  installed, and to crea
 2. Navigate to the repository directory:
 
    ```bash
-   cd Ababa-Movies-List-server-NestJS
+   cd Movies-List-server-NestJS
    ```
 
 3. Install dependencies:
