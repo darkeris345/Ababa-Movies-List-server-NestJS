@@ -1,17 +1,17 @@
-# Ababa Movie List Server
+# Movie List Server
 
-The server-side code for the Movie List application. This server provides the necessary backend functionality to support the client-side application, allowing users to browse and manage their favorite movies. You can download client-side code [here](https://github.com/darkeris345/Ababa-Movies-List-FE)
+The server-side code for the Movie List application. This server provides the necessary backend functionality to support the client-side application, allowing users to browse and manage their favorite movies. You can download client-side code [here](https://github.com/darkeris345/Movies-List-FE)
 
 ## Getting Started
 
-To get started, first, you need git and Node.js, and NestJS  installed, and to create the MongoDB database.
+To get started, first, you need git, Node.js, and NestJS  installed, and to create the MongoDB database.
 
 
 ## Installation
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/darkeris345/Ababa-Movies-List-server-NestJS.git
+   git clone https://github.com/darkeris345/Movies-List-server-NestJS.git
    ```
 
 2. Navigate to the repository directory:
